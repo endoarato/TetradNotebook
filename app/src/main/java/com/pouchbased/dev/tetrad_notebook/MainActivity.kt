@@ -1,47 +1,40 @@
 package com.pouchbased.dev.tetrad_notebook
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.puchbased.dev.tetrad_notebook.ui.theme.TetradNotebookTheme
+import androidx.activity.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.pouchbased.dev.tetrad_notebook.ui.theme.TetradNotebookTheme
+import java.util.UUID
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            TetradNotebookTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+
+    private val repository by lazy { NoteRepository(applicationContext) }
+    private val pdfRenderer by lazy { PdfRendererManager(applicationContext) }
+    
+    private val viewModel: NoteViewModel by viewModels {
+        object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return NoteViewModel(repository, pdfRenderer) as T
             }
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TetradNotebookTheme {
-        Greeting("Android")
+        setContent {
+            TetradNotebookTheme {
+                NoteScreen(
+                    viewModel = viewModel
+                )
+            }
+        }
     }
 }

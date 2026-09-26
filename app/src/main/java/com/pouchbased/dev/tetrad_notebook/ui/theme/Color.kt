@@ -1,4 +1,4 @@
-package com.puchbased.dev.tetrad_notebook.ui.theme
+package com.pouchbased.dev.tetrad_notebook.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
